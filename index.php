@@ -436,8 +436,7 @@ var TAPES = <?php echo json_encode($tapes, JSON_HEX_TAG | JSON_HEX_APOS | JSON_H
 
   video.addEventListener('error', function () {
     if (!video.error) return;
-    showError('Video not found',
-      'Could not load <code>' + escapeHtml(video.currentSrc || v) + '</code>. Make sure the video file is in the same folder as this page.');
+    showError('Video not found', 'The file does not exist.');
   });
 
   function showError(title, message) {
@@ -450,12 +449,6 @@ var TAPES = <?php echo json_encode($tapes, JSON_HEX_TAG | JSON_HEX_APOS | JSON_H
       el.appendChild(p);
     }
     document.body.appendChild(el);
-  }
-
-  function escapeHtml(s) {
-    return s.replace(/[&<>"']/g, function (c) {
-      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
-    });
   }
 })();
 </script>
