@@ -409,6 +409,11 @@ var TAPES = <?php echo json_encode($tapes, JSON_HEX_TAG | JSON_HEX_APOS | JSON_H
     showError('Invalid video URL', 'Video must be a filename within the videos directory.');
     return;
   }
+  if (TAPES.indexOf(v) === -1) {
+    // Not a tape: skip the player and download button entirely.
+    showError('Video not found', 'The file does not exist.');
+    return;
+  }
   src = 'videos/' + v;
 
   var video = document.createElement('video');
