@@ -1,0 +1,2 @@
+# Video tapes are added at deployment time, not versioned
+videos/*.mp4
