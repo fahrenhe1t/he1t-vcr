@@ -230,7 +230,9 @@ if ($v !== ''
       transparent 1px 3px
     );
     opacity: 0.55;
+    display: none;
   }
+  .scanlines.on { display: block; }
   .vignette {
     position: fixed;
     inset: 0;
@@ -264,6 +266,50 @@ if ($v !== ''
     background: var(--neon-pink);
     box-shadow: 0 0 8px var(--pink-glow), 0 0 3px var(--neon-pink);
     animation: led-blink 1.6s steps(1, end) infinite;
+  }
+  .scanlines-toggle {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    cursor: pointer;
+    font-size: 0.7rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-dim);
+    user-select: none;
+  }
+  .scanlines-toggle input {
+    appearance: none;
+    width: 2.2rem;
+    height: 1.1rem;
+    border-radius: 0.55rem;
+    background: color-mix(in srgb, var(--outrun-dark) 80%, black);
+    border: 1px solid var(--panel-edge);
+    position: relative;
+    cursor: pointer;
+    transition: background 0.2s, border-color 0.2s;
+  }
+  .scanlines-toggle input::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 3px;
+    transform: translateY(-50%);
+    width: 0.85rem;
+    height: 0.85rem;
+    border-radius: 50%;
+    background: var(--ink-dim);
+    transition: transform 0.2s, background 0.2s;
+  }
+  .scanlines-toggle input:checked {
+    background: color-mix(in srgb, var(--neon-pink) 30%, var(--outrun-dark));
+    border-color: var(--neon-pink);
+  }
+  .scanlines-toggle input:checked::before {
+    transform: translateY(-50%) translateX(1.1rem);
+    background: var(--neon-pink);
+    box-shadow: 0 0 6px var(--pink-glow);
   }
   .brand {
     margin-left: auto;
@@ -511,9 +557,23 @@ var TAPES = <?php echo json_encode($tapes, JSON_HEX_TAG | JSON_HEX_APOS | JSON_H
   var brand = document.createElement('div');
   brand.className = 'brand';
   brand.textContent = 'HE1T VCR';
+  var scanToggle = document.createElement('label');
+  scanToggle.className = 'scanlines-toggle';
+  var scanCheck = document.createElement('input');
+  scanCheck.type = 'checkbox';
+  scanCheck.setAttribute('aria-label', 'Scanlines');
+  var scanText = document.createElement('span');
+  scanText.textContent = 'Scanlines';
+  scanToggle.appendChild(scanCheck);
+  scanToggle.appendChild(scanText);
   header.appendChild(led);
   header.appendChild(brand);
+  header.appendChild(scanToggle);
   document.body.appendChild(header);
+
+  scanCheck.addEventListener('change', function () {
+    scanlines.classList.toggle('on', scanCheck.checked);
+  });
 
   var vhsBtn = document.createElement('button');
   vhsBtn.className = 'vhs-btn';
