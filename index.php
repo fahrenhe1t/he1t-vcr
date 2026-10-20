@@ -489,7 +489,11 @@ if ($v !== ''
     border-top: 1px solid var(--panel-edge);
     background: color-mix(in srgb, var(--outrun-dark) 80%, black);
   }
-  .ticker-strip span {
+  .ticker-track {
+    display: inline-flex;
+    animation: ticker-scroll 18s linear infinite;
+  }
+  .ticker-track span {
     display: inline-block;
     padding: 0.35rem 0;
     font-size: 0.75rem;
@@ -498,7 +502,6 @@ if ($v !== ''
     text-transform: uppercase;
     color: var(--neon-pink);
     text-shadow: 0 0 8px var(--pink-glow);
-    animation: ticker-scroll 18s linear infinite;
   }
 }
 
@@ -589,10 +592,13 @@ var TAPES = <?php echo json_encode($tapes, JSON_HEX_TAG | JSON_HEX_APOS | JSON_H
   var ticker = document.createElement('div');
   ticker.className = 'ticker-strip';
   ticker.setAttribute('aria-hidden', 'true');
+  var tickerTrack = document.createElement('div');
+  tickerTrack.className = 'ticker-track';
   var tickerText = document.createElement('span');
   tickerText.textContent = '\u25C4\u25C4 REWIND \u25BA\u25BA \u00B7 BE KIND, PLEASE REWIND \u00B7 INSERT TAPE TO PLAY \u00B7 ';
-  ticker.appendChild(tickerText.cloneNode(true));
-  ticker.appendChild(tickerText);
+  tickerTrack.appendChild(tickerText.cloneNode(true));
+  tickerTrack.appendChild(tickerText);
+  ticker.appendChild(tickerTrack);
   document.body.appendChild(ticker);
 
   // Reserve exactly the header's height in the flow so the centered content
