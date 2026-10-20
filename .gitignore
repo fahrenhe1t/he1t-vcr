@@ -1,2 +1,3 @@
-# Video tapes are added at deployment time, not versioned
+# Video tapes and their stills are added at deployment time, not versioned
 videos/*.mp4
+videos/*.jpg
