@@ -159,8 +159,37 @@ if ($v !== ''
 <meta property="og:image:height" content="630">
 <?php endif; ?>
 <style>
+@layer tokens, base, layout, components, animations;
+
+@layer tokens {
+  :root {
+    --neon-pink: #ff007f;
+    --cyber-cyan: #00f3ff;
+    --laser-purple: #9d4edd;
+    --sunset-orange: #ff7b00;
+    --outrun-dark: #1a0b2e;
+
+    --font-retro: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    --ink: #fff;
+    --ink-dim: color-mix(in srgb, var(--ink) 65%, black);
+    --pink-glow: color-mix(in srgb, var(--neon-pink) 55%, transparent);
+    --cyan-glow: color-mix(in srgb, var(--cyber-cyan) 30%, transparent);
+    --panel: color-mix(in srgb, var(--outrun-dark) 88%, black);
+    --panel-edge: color-mix(in srgb, var(--laser-purple) 45%, black);
+  }
+}
+
+@layer base {
   * { margin: 0; padding: 0; box-sizing: border-box; }
-  html, body { height: 100%; background: #000; color: #fff; font-family: system-ui, -apple-system, sans-serif; }
+  html, body {
+    height: 100%;
+    background: #000;
+    color: var(--ink);
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  }
+}
+
+@layer layout {
   body {
     display: flex;
     flex-direction: column;
@@ -168,6 +197,15 @@ if ($v !== ''
     justify-content: center;
     position: relative;
   }
+  .bg-image {
+    position: fixed;
+    inset: 0;
+    background: url('vcr.png') center center / contain no-repeat #000;
+    pointer-events: none;
+    z-index: 0;
+    transition: opacity 0.3s ease;
+  }
+  .bg-image.dimmed { opacity: 0.3; }
   .site-header {
     position: absolute;
     top: 0;
@@ -176,30 +214,79 @@ if ($v !== ''
     z-index: 3;
     display: flex;
     align-items: center;
+    gap: 0.75rem;
     padding: 0.5rem 1rem;
-    background: rgba(0, 0, 0, 0.55);
+    background: color-mix(in srgb, var(--outrun-dark) 70%, black);
+    border-bottom: 1px solid var(--panel-edge);
   }
-  .bg-image {
+  .scanlines {
     position: fixed;
     inset: 0;
-    background: url('vcr.png') center center / contain no-repeat;
+    z-index: 4;
     pointer-events: none;
-    z-index: 0;
-    transition: opacity 0.3s;
+    background: repeating-linear-gradient(
+      to bottom,
+      color-mix(in srgb, black 38%, transparent) 0 1px,
+      transparent 1px 3px
+    );
+    opacity: 0.55;
   }
-  .bg-image.dimmed { opacity: 0.3; }
+  .vignette {
+    position: fixed;
+    inset: 0;
+    z-index: 5;
+    pointer-events: none;
+    background: radial-gradient(
+      ellipse at center,
+      transparent 55%,
+      color-mix(in srgb, black 75%, transparent) 100%
+    );
+  }
+  video {
+    max-width: 100vw;
+    max-height: 80vh;
+    width: auto;
+    height: auto;
+    position: relative;
+    z-index: 1;
+    border: 2px solid var(--cyan-glow);
+    box-shadow: 0 0 24px var(--cyan-glow), 0 0 4px var(--cyan-glow);
+    background: #000;
+  }
+}
+
+@layer components {
+  .power-led {
+    flex-shrink: 0;
+    width: 0.65rem;
+    height: 0.65rem;
+    border-radius: 50%;
+    background: var(--neon-pink);
+    box-shadow: 0 0 8px var(--pink-glow), 0 0 3px var(--neon-pink);
+    animation: led-blink 1.6s steps(1, end) infinite;
+  }
   .brand {
     margin-left: auto;
     margin-right: auto;
     text-align: center;
-    font-size: 1.5rem;
-    font-weight: 600;
-    letter-spacing: 0.05em;
-    text-shadow: 0 1px 4px rgba(0,0,0,0.8);
+    font-size: clamp(1.1rem, 3.5vw, 1.75rem);
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ink);
+    text-shadow: 0 0 12px var(--pink-glow), 0 2px 4px rgba(0, 0, 0, 0.8);
     pointer-events: none;
   }
-  .brand a { color: inherit; text-decoration: none; pointer-events: auto; }
-  video { max-width: 100vw; max-height: 80vh; width: auto; height: auto; position: relative; z-index: 1; }
+  .brand a {
+    color: inherit;
+    text-decoration: none;
+    pointer-events: auto;
+    transition: text-shadow 0.2s ease, color 0.2s ease;
+  }
+  .brand a:hover {
+    color: var(--cyber-cyan);
+    text-shadow: 0 0 14px var(--cyan-glow), 0 2px 4px rgba(0, 0, 0, 0.8);
+  }
   .download-btn {
     position: relative;
     z-index: 1;
@@ -209,53 +296,73 @@ if ($v !== ''
     margin: 0.5rem auto;
     width: 48px;
     height: 48px;
-    border: none;
-    background: rgba(255,255,255,0.3);
-    color: #fff;
+    border: 1px solid var(--panel-edge);
+    background: color-mix(in srgb, var(--outrun-dark) 60%, transparent);
+    color: var(--cyber-cyan);
+    font-family: var(--font-retro);
     font-size: 2rem;
     line-height: 1;
     border-radius: 50%;
     cursor: pointer;
     text-decoration: none;
-    transition: background 0.2s;
+    box-shadow: 0 0 10px var(--cyan-glow);
+    transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
   }
-  .download-btn:hover { background: rgba(255,255,255,0.5); }
+  .download-btn:hover {
+    border-color: var(--neon-pink);
+    background: color-mix(in srgb, var(--outrun-dark) 80%, transparent);
+    box-shadow: 0 0 16px var(--pink-glow);
+    color: var(--neon-pink);
+  }
   .error {
     text-align: center;
     padding: 2rem;
     line-height: 1.6;
+    font-size: clamp(0.9rem, 2.5vw, 1rem);
   }
-  .error h1 { font-size: 1.5rem; margin-bottom: 0.5rem; font-weight: 600; }
-  .error p { color: #999; }
+  .error h1 {
+    font-size: clamp(1.25rem, 4vw, 1.5rem);
+    margin-bottom: 0.5rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    color: var(--sunset-orange);
+    text-shadow: 0 0 12px color-mix(in srgb, var(--sunset-orange) 45%, transparent);
+  }
+  .error p { color: var(--ink-dim); }
   .error code {
-    background: #222;
+    background: color-mix(in srgb, var(--outrun-dark) 80%, black);
     padding: 0.15em 0.4em;
     border-radius: 4px;
-    color: #e0e0e0;
+    border: 1px solid var(--panel-edge);
+    color: var(--ink);
   }
   .vhs-btn {
     width: 100px;
     flex-shrink: 0;
     cursor: pointer;
-    border: none;
+    border: 1px solid transparent;
     background: none;
     padding: 0;
     opacity: 0.85;
-    transition: opacity 0.2s;
+    transition: opacity 0.2s ease, filter 0.2s ease, border-color 0.2s ease;
   }
   .vhs-btn img { display: block; width: 100%; height: auto; }
-  .vhs-btn:hover { opacity: 1; }
+  .vhs-btn:hover {
+    opacity: 1;
+    border-color: var(--neon-pink);
+    filter: drop-shadow(0 0 6px var(--pink-glow));
+  }
   .tape-window {
     position: fixed;
     top: 76px;
     left: 12px;
     width: 340px;
     max-width: calc(100vw - 24px);
-    z-index: 6;
-    background: rgba(15, 15, 17, 0.96);
-    border: 1px solid #333;
-    border-radius: 8px;
-    box-shadow: 0 8px 28px rgba(0,0,0,0.7);
+    z-index: 7;
+    background: var(--panel);
+    border: 1px solid var(--laser-purple);
+    border-radius: 6px;
+    box-shadow: 0 8px 28px rgba(0, 0, 0, 0.7), 0 0 18px var(--cyan-glow);
   }
   .tape-title {
     display: flex;
@@ -263,9 +370,17 @@ if ($v !== ''
     justify-content: flex-start;
     padding: 0.6rem 2.4rem 0.6rem 0.8rem;
     font-size: 0.95rem;
-    font-weight: 600;
-    letter-spacing: 0.05em;
-    border-bottom: 1px solid #333;
+    font-weight: 700;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--cyber-cyan);
+    text-shadow: 0 0 10px var(--cyan-glow);
+    border-bottom: 1px solid var(--panel-edge);
+    background: linear-gradient(
+      90deg,
+      color-mix(in srgb, var(--laser-purple) 18%, transparent),
+      transparent
+    );
   }
   .tape-close {
     position: absolute;
@@ -273,14 +388,20 @@ if ($v !== ''
     right: 0.5rem;
     width: 26px;
     height: 26px;
-    border: none;
+    border: 1px solid transparent;
     background: none;
-    color: #ccc;
+    color: var(--ink-dim);
     font-size: 1rem;
+    font-family: var(--font-retro);
     line-height: 1;
     cursor: pointer;
+    border-radius: 4px;
+    transition: color 0.2s ease, border-color 0.2s ease;
   }
-  .tape-close:hover { color: #fff; }
+  .tape-close:hover {
+    color: var(--neon-pink);
+    border-color: var(--neon-pink);
+  }
   .tape-list {
     max-height: 60vh;
     overflow-y: auto;
@@ -293,8 +414,11 @@ if ($v !== ''
     padding: 0.45rem 0.8rem;
     cursor: pointer;
     font-size: 0.9rem;
+    transition: background 0.15s ease;
   }
-  .tape-row:hover { background: rgba(255,255,255,0.12); }
+  .tape-row:hover {
+    background: color-mix(in srgb, var(--laser-purple) 22%, transparent);
+  }
   .tape-row img {
     width: 26px;
     height: 18px;
@@ -303,10 +427,50 @@ if ($v !== ''
   }
   .tape-empty {
     padding: 0.8rem;
-    color: #999;
+    color: var(--ink-dim);
     font-size: 0.85rem;
     text-align: center;
   }
+  .ticker-strip {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 3;
+    overflow: hidden;
+    white-space: nowrap;
+    border-top: 1px solid var(--panel-edge);
+    background: color-mix(in srgb, var(--outrun-dark) 80%, black);
+  }
+  .ticker-strip span {
+    display: inline-block;
+    padding: 0.35rem 0;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.35em;
+    text-transform: uppercase;
+    color: var(--neon-pink);
+    text-shadow: 0 0 8px var(--pink-glow);
+    animation: ticker-scroll 18s linear infinite;
+  }
+}
+
+@layer animations {
+  @keyframes led-blink {
+    0%, 60% { opacity: 1; }
+    61%, 100% { opacity: 0.25; }
+  }
+  @keyframes ticker-scroll {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation: none !important;
+      transition: none !important;
+    }
+  }
+}
 </style>
 </head>
 <body>
@@ -331,22 +495,44 @@ var TAPES = <?php echo json_encode($tapes, JSON_HEX_TAG | JSON_HEX_APOS | JSON_H
   bg.className = 'bg-image';
   document.body.appendChild(bg);
 
+  var scanlines = document.createElement('div');
+  scanlines.className = 'scanlines';
+  document.body.appendChild(scanlines);
+
+  var vignette = document.createElement('div');
+  vignette.className = 'vignette';
+  document.body.appendChild(vignette);
+
   var header = document.createElement('header');
   header.className = 'site-header';
+  var led = document.createElement('span');
+  led.className = 'power-led';
+  led.setAttribute('aria-hidden', 'true');
   var brand = document.createElement('div');
   brand.className = 'brand';
   brand.textContent = 'HE1T VCR';
+  header.appendChild(led);
   header.appendChild(brand);
   document.body.appendChild(header);
 
   var vhsBtn = document.createElement('button');
   vhsBtn.className = 'vhs-btn';
+  /* aria-label: "Insert Tape to Play" */
   vhsBtn.setAttribute('aria-label', 'Insert Tape to Play');
   var vhsImg = document.createElement('img');
   vhsImg.src = 'vhs.png';
   vhsImg.alt = 'VHS tape';
   vhsBtn.appendChild(vhsImg);
-  header.insertBefore(vhsBtn, brand);
+  header.insertBefore(vhsBtn, led);
+
+  var ticker = document.createElement('div');
+  ticker.className = 'ticker-strip';
+  ticker.setAttribute('aria-hidden', 'true');
+  var tickerText = document.createElement('span');
+  tickerText.textContent = '\u25C4\u25C4 REWIND \u25BA\u25BA \u00B7 BE KIND, PLEASE REWIND \u00B7 INSERT TAPE TO PLAY \u00B7 ';
+  ticker.appendChild(tickerText.cloneNode(true));
+  ticker.appendChild(tickerText);
+  document.body.appendChild(ticker);
 
   // Reserve exactly the header's height in the flow so the centered content
   // (video + download button) can never be positioned underneath the header,
