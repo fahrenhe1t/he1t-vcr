@@ -112,6 +112,12 @@ if ($v !== ''
     $videoFile = $v;
     $videoUrl = $pageUrl . '/videos/' . rawurlencode($v);
     $videoDims = vcr_video_dimensions(__DIR__ . '/videos/' . $v);
+    // Per-tape still (same basename, .jpg) becomes the og:image; fall back
+    // to the default poster when the still is missing.
+    $stillExt = substr($v, -4) === '.mp4' ? '.jpg' : '';
+    if ($stillExt !== '' && is_file(__DIR__ . '/videos/' . substr($v, 0, -4) . $stillExt)) {
+        $ogImage = $pageUrl . '/videos/' . rawurlencode(substr($v, 0, -4) . $stillExt);
+    }
 }
 ?>
 <title><?php echo $videoFile !== null ? htmlspecialchars($videoFile . ' - HE1T VCR', ENT_QUOTES) : 'HE1T VCR'; ?></title>

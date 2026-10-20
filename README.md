@@ -14,6 +14,7 @@ https://<your-host>/?v=wardogs_base.mp4
 ```
 
 - `/?v=<filename>` plays the video named `<filename>` from `videos/`
+- Each tape has a matching still image in `videos/` with the same name but a `.jpg` extension (e.g. `wardogs_base.mp4` → `wardogs_base.jpg`); the still is used as the page's Open Graph image (see below)
 - `/` (no parameter) shows the HE1T VCR splash screen (title + `vcr.png`)
 - The floating `vhs.png` button (top-left) opens the "Insert Tape to Play" chooser, which lists every `.mp4` in `videos/` (descending by filename); clicking a tape navigates to `/?v=<filename>`
 - If the video can't be loaded, a "Video not found" message is shown
@@ -29,6 +30,7 @@ https://<your-host>/?v=wardogs_base.mp4
 When a `/?v=<file>` URL is pasted into Discord, Discord's link preview fetcher reads the Open Graph tags the page emits and renders a **native playable video player** that streams the file directly from the server — instead of a plain link card. The page only emits these tags when `?v=` resolves to an existing file in `videos/`.
 
 - Works on any domain (no whitelist) because it's a direct-file video embed, not an iframe embed.
+- `og:image` is set per-tape to the tape's still image (`videos/<name>.jpg`, created alongside the video on upload) so the preview frame shows the video itself; if the still is missing, it falls back to `og-vcr.png`.
 - `og:video:width/height` are filled in from the tape's actual dimensions (read from the mp4 header's `moov`/`tkhd` boxes — core PHP only, no extensions) so the embed frame matches the video's aspect ratio; if they can't be determined, the tags are omitted and the player falls back to a default frame.
 - The URL must be publicly reachable over HTTPS, and the file must exist when the link is posted — Discord fetches the page at message-send time.
 - Posting the direct video URL (`https://<your-host>/videos/<file>.mp4`) also produces a native player without going through the page.
@@ -42,8 +44,8 @@ When a `/?v=<file>` URL is pasted into Discord, Discord's link preview fetcher r
 | `index.php`     | The player page (all logic, styles, and the PHP tape list)    |
 | `vcr.png`       | Background image shown behind the video / on the splash       |
 | `vhs.png`       | Floating "Insert Tape" button + row icon in the chooser       |
-| `og-vcr.png`    | 1200×630 Open Graph image (link preview cards)                |
-| `videos/`       | Video files (`*.mp4`); `.htaccess` disables directory listing |
+| `og-vcr.png`    | 1200×630 default Open Graph image (splash + missing-still fallback) |
+| `videos/`       | Video files (`*.mp4`) + per-tape stills (`*.jpg`); `.htaccess` disables directory listing |
 
 ## Deployment
 
