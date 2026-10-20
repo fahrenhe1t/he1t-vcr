@@ -127,8 +127,13 @@ if ($v !== ''
 <meta property="og:title" content="<?php echo htmlspecialchars($videoFile, ENT_QUOTES); ?>">
 <meta property="og:description" content="Be Kind, Please Rewind">
 <meta property="og:image" content="<?php echo htmlspecialchars($ogImage, ENT_QUOTES); ?>">
+<?php if ($videoDims !== null): ?>
+<meta property="og:image:width" content="<?php echo (int)$videoDims[0]; ?>">
+<meta property="og:image:height" content="<?php echo (int)$videoDims[1]; ?>">
+<?php else: ?>
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
+<?php endif; ?>
 <meta property="og:video" content="<?php echo htmlspecialchars($videoUrl, ENT_QUOTES); ?>">
 <meta property="og:video:url" content="<?php echo htmlspecialchars($videoUrl, ENT_QUOTES); ?>">
 <meta property="og:video:secure_url" content="<?php echo htmlspecialchars($videoUrl, ENT_QUOTES); ?>">
