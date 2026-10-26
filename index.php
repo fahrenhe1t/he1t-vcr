@@ -204,6 +204,7 @@ if ($v !== ''
     background: url('vcr.png') center center / contain no-repeat #000;
     pointer-events: none;
     z-index: 0;
+    opacity: 0.5;
     transition: opacity 0.3s ease;
   }
   .bg-image.dimmed { opacity: 0.3; }
