@@ -701,6 +701,14 @@ var TAPES = <?php echo json_encode($tapes, JSON_HEX_TAG | JSON_HEX_APOS | JSON_H
     showError('Video not found', 'The file does not exist.');
   });
 
+  // Close the player when clicking anywhere outside the video or download
+  // button (e.g. the background). Clicks inside the video itself (controls
+  // or the film area) never bubble out of it, so they're excluded for free.
+  document.addEventListener('click', function (e) {
+    if (video.contains(e.target) || dl.contains(e.target)) { return; }
+    location.href = '/';
+  });
+
   function showError(title, message) {
     var el = document.createElement('div');
     el.className = 'error';
