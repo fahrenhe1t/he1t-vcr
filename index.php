@@ -706,7 +706,7 @@ var TAPES = <?php echo json_encode($tapes, JSON_HEX_TAG | JSON_HEX_APOS | JSON_H
   // (controls or the film area) never bubble out of it, so they're excluded
   // for free.
   document.addEventListener('click', function (e) {
-    if (video.contains(e.target) || dl.contains(e.target) || header.contains(e.target)) { return; }
+    if (video.contains(e.target) || dl.contains(e.target) || header.contains(e.target) || win.contains(e.target)) { return; }
     location.href = '/';
   });
 
